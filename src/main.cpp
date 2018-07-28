@@ -2,6 +2,7 @@
 #include <Logger.h>
 #include <MultiLedSegmentDisplay.h>
 #include <DigitalPort.h>
+#include <RunningAverage.h>
 
 // START CONFIG
 char *version = "2.4";
@@ -28,6 +29,7 @@ unsigned long prevTime = 0;
 unsigned long currTime = 0;
 unsigned long deltaTime = 0;
 Mode currMode = DISPLAYING;
+RunningAverage runningAvgTemp = RunningAverage(10);
 
 // TEMP SETTER VARS
 double setTemp = 99.9;
@@ -81,16 +83,21 @@ double readKnobTemp()
   return map(analogRead(meterAnalogPort), 0, 1023, 0, 99);
 }
 
+double getTemp()
+{
+  int analogTemp = analogRead(tempAnalogPort);
+  double f = analogToF(analogTemp);
+  runningAvgTemp.insert(f);
+
+  return runningAvgTemp.getAverage();
+}
+
 void runTempDisplayer()
 {
   if (deltaTime >= updateDelay)
   {
     deltaTime = 0;
-
-    // TEMP EVAL
-    int analogTemp = analogRead(tempAnalogPort);
-    double f = analogToF(analogTemp);
-    currTemp = f;
+    currTemp = getTemp();
    }
 
    setLed(currTemp, 10);
