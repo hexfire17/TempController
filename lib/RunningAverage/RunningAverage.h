@@ -9,6 +9,8 @@ class RunningAverage
     RunningAverage(int size);
     void insert(double d);
     double getAverage();
+    void clear();
+
   private:
     void incrementIndex();
 

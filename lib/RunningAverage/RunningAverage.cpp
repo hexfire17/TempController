@@ -1,15 +1,20 @@
 #include "Arduino.h"
 #include "RunningAverage.h"
 
+void RunningAverage::clear()
+{
+  for (int i = 0; i < _len; i++)
+  {
+    _averageArr[i] = -1;
+  }
+}
+
 RunningAverage::RunningAverage(int size)
 {
   _averageArr = new double[size];
   _len = size;
   _index = 0;
-  for (int i = 0; i < _len; i++)
-  {
-    _averageArr[i] = -1;
-  }
+  clear();
 }
 
 void RunningAverage::incrementIndex()

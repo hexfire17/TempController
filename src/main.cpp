@@ -30,6 +30,7 @@ unsigned long currTime = 0;
 unsigned long deltaTime = 0;
 Mode currMode = DISPLAYING;
 RunningAverage runningAvgTemp = RunningAverage(10);
+RunningAverage runningAvgPot = RunningAverage(5);
 
 // TEMP SETTER VARS
 double setTemp = 99.9;
@@ -80,7 +81,9 @@ void setLed(double temp, int endLetter)
 
 double readKnobTemp()
 {
-  return map(analogRead(meterAnalogPort), 0, 1023, 0, 99);
+  int knobTemp = map(analogRead(meterAnalogPort), 0, 1023, 0, 99);
+  runningAvgPot.insert(knobTemp);
+  return (int) runningAvgPot.getAverage();
 }
 
 double getTemp()
@@ -167,6 +170,7 @@ void loop()
   if (currMode == SETTING && tempSetterUnactiveMs > tempSetterTimeoutMs)
   {
     tempSetterUnactiveMs = 0;
+    runningAvgPot.clear();
     currMode = DISPLAYING;
   }
 
